@@ -46,15 +46,9 @@ eas.json                EAS build profiles
 npm install
 ```
 
-### 2. Set your Deepgram API key
+### 2. Get a Deepgram API key
 
-Create a `.env.local` file in the project root:
-
-```
-DEEPGRAM_API_KEY=your_key_here
-```
-
-Get a free API key at [deepgram.com](https://deepgram.com). The key is injected at build time via `app.config.js` and never committed.
+Sign up at [deepgram.com](https://deepgram.com) and create an API key in the console. The free tier is enough for personal use.
 
 ### 3. Log in to EAS (first time only)
 
@@ -62,7 +56,30 @@ Get a free API key at [deepgram.com](https://deepgram.com). The key is injected 
 eas login
 ```
 
-### 4. Build the APK
+### 4. Set the API key as an EAS environment variable
+
+The key is injected at build time via `app.config.js` using `process.env.DEEPGRAM_API_KEY`. EAS cloud builds do **not** read `.env.local` — you must register the key as an EAS environment variable so it is available during the build:
+
+```bash
+eas env:create
+```
+
+When prompted:
+- **Variable name:** `DEEPGRAM_API_KEY`
+- **Value:** your Deepgram API key
+- **Visibility:** Secret
+- **Scope:** Project
+- **Environment:** All
+
+You only need to do this once. Verify it was saved with:
+
+```bash
+eas env:list
+```
+
+> **Local development note:** if you ever run the app via a local dev server, create a `.env.local` file in the project root with `DEEPGRAM_API_KEY=your_key_here`. This file is gitignored and is only used locally — it has no effect on EAS cloud builds.
+
+### 5. Build the APK
 
 ```bash
 eas build --platform android --profile preview
@@ -97,6 +114,8 @@ Commands apply only to finalized transcript segments, not interim results.
 - **Expo Go will not work** — `expo-av` native module is not included in Expo Go. Always test via APK.
 - **Do not add expo-router** — single screen app, and it pulls in react-dom which breaks the build.
 - **Do not commit `.env.local`** — it is gitignored, keep it that way.
+- **`.env.local` does not work for EAS builds** — EAS cloud builds ignore it. Register the key via `eas env:create` instead (see Setup step 4).
+- **If you see "Recording error / WebSocket error"** — the API key is missing or invalid in the build. Run `eas env:list` to confirm it is registered, then rebuild.
 
 ## Pending features
 
