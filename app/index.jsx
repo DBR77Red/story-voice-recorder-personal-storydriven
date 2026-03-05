@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import RecordButton from '../components/RecordButton';
 import TextPreview from '../components/TextPreview';
@@ -19,7 +19,6 @@ import {
 } from '../hooks/useCommandParser';
 
 function HomeScreen() {
-  const insets = useSafeAreaInsets();
   const [storyText, setStoryText]           = useState('');
   const [interimText, setInterimText]       = useState('');
   const [showExport, setShowExport]         = useState(false);
@@ -97,7 +96,7 @@ function HomeScreen() {
   // -----------------------------------------------------------------------
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+    <SafeAreaView style={styles.root} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.appTitle}>VoiceStory</Text>
@@ -141,7 +140,7 @@ function HomeScreen() {
         storyText={storyText}
         onClose={() => setShowExport(false)}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
