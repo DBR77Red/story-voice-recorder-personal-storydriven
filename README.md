@@ -1,5 +1,8 @@
 # VoiceStory
 
+<img width="785" height="1600" alt="image" src="https://github.com/user-attachments/assets/a55ed172-661d-499a-a9b1-19d1319ad148" />
+
+
 A personal, single-user Android app for voice-driven story writing. Speak into the mic, Deepgram transcribes in real-time, and the result exports as a `.txt` file. No backend, no auth, no Play Store — APK sideloaded onto one personal device.
 
 ## Features
