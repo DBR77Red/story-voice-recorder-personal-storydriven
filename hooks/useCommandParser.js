@@ -7,7 +7,7 @@ const SUBSTITUTIONS = [
   { pattern: /\bparagraph\b/gi, replacement: '\n\n' },
 ];
 
-const DELETE_PATTERN = /\bdelete ( the)? last sentence\b/i;
+const DELETE_PATTERN = /\bdelete( the)? last sentence\b/i;
 
 /** Replace spoken punctuation words in a transcript fragment. */
 export function parseCommands(text) {

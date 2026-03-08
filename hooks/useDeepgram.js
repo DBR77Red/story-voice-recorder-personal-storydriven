@@ -152,10 +152,13 @@ export function useDeepgram({ onFinalTranscript, onInterimTranscript, onError } 
       // Read API key via expo-constants (injected through app.config.js extra)
       const apiKey = Constants.expoConfig?.extra?.deepgramApiKey ?? '';
       if (!apiKey) {
-        throw new Error('DEEPGRAM_API_KEY is not set. Add it to .env.local and restart the dev server.');
+        throw new Error('DEEPGRAM_API_KEY is not set. Add it to .env.local and rebuild the APK.');
       }
 
-      // Open Deepgram streaming WebSocket
+      // Open Deepgram streaming WebSocket.
+      // Auth via token query param — Android's React Native WebSocket does NOT
+      // reliably forward custom headers, so Authorization header is unreliable.
+      // Deepgram supports token auth in the URL for WebSocket connections.
       const wsUrl =
         `wss://api.deepgram.com/v1/listen` +
         `?model=nova-2` +
@@ -193,11 +196,21 @@ export function useDeepgram({ onFinalTranscript, onInterimTranscript, onError } 
       };
 
       ws.onerror = (event) => {
-        handleError(new Error(event.message ?? 'WebSocket error'));
+        // onerror on Android rarely carries a useful message; onclose fires
+        // right after with the actual code and reason, so we log here only.
+        console.warn('[useDeepgram] WebSocket error event', event.message);
       };
 
       ws.onclose = (event) => {
         console.log('[useDeepgram] WebSocket closed', event.code, event.reason);
+        // Only surface as an error if recording was still active (not a
+        // deliberate stop) and it wasn't a clean close (code 1000).
+        if (recordingRef.current && event.code !== 1000) {
+          const reason = event.reason
+            ? `${event.code}: ${event.reason}`
+            : `WebSocket closed (code ${event.code})`;
+          handleError(new Error(reason));
+        }
       };
 
       // Start audio recording
